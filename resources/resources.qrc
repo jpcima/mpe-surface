@@ -1,0 +1,12 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>images/noto/emoji_u1f4da.png</file>
+  <file>images/noto/emoji_u1f527.png</file>
+  <file>images/noto/emoji_u1f680.png</file>
+  <file>images/noto/emoji_u1f916.png</file>
+  <file>images/noto/emoji_u2139.png</file>
+  <file>images/noto/emoji_u2714.png</file>
+  <file>images/noto/emoji_u274c.png</file>
+  <file>images/noto/emoji_u2753.png</file>
+</qresource>
+</RCC>
