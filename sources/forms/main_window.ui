@@ -92,6 +92,7 @@
    </attribute>
    <addaction name="actionSend_configuration"/>
    <addaction name="actionSettingsMenu"/>
+   <addaction name="actionChoose_MIDI_port"/>
    <addaction name="actionDeviceInfo"/>
    <addaction name="actionHelp"/>
   </widget>
@@ -129,6 +130,15 @@
    </property>
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="actionChoose_MIDI_port">
+   <property name="icon">
+    <iconset resource="../../resources/resources.qrc">
+     <normaloff>:/images/noto/emoji_u1f3b9.png</normaloff>:/images/noto/emoji_u1f3b9.png</iconset>
+   </property>
+   <property name="text">
+    <string>Choose MIDI port</string>
    </property>
   </action>
  </widget>

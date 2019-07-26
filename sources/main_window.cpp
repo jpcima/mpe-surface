@@ -48,6 +48,7 @@ MainWindow::MainWindow(TouchMpeHandler *handler, QWidget *parent)
     //
     connect(ui->actionSend_configuration, &QAction::triggered, this, &MainWindow::sendConfiguration);
     connect(ui->actionDeviceInfo, &QAction::triggered, this, &MainWindow::execDeviceInfoDialog);
+    connect(ui->actionChoose_MIDI_port, &QAction::triggered, this, &MainWindow::chooseMidiPort);
     connect(ui->actionHelp, &QAction::triggered, this, &MainWindow::execHelpDialog);
     connect(keyScaleSlider_, &QSlider::valueChanged, this, &MainWindow::updateKeyScale);
     connect(mpeZoneSlider_, &QSlider::valueChanged, this, &MainWindow::updateMpeZones);
@@ -195,6 +196,7 @@ void MainWindow::execHelpDialog()
 
     QPixmap rocketPic = QPixmap(":/images/noto/emoji_u1f680.png").scaledToHeight(32, Qt::SmoothTransformation);
     QPixmap wrenchPic = QPixmap(":/images/noto/emoji_u1f527.png").scaledToHeight(32, Qt::SmoothTransformation);
+    QPixmap keyboardPic = QPixmap(":/images/noto/emoji_u1f3b9.png").scaledToHeight(32, Qt::SmoothTransformation);
     QPixmap infoPic = QPixmap(":/images/noto/emoji_u2139.png").scaledToHeight(32, Qt::SmoothTransformation);
 #ifdef Q_OS_ANDROID
     QPixmap robotPic = QPixmap(":/images/noto/emoji_u1f916.png").scaledToHeight(32, Qt::SmoothTransformation);
@@ -242,6 +244,12 @@ void MainWindow::execHelpDialog()
 
     insertSeparator();
 
+    insertPictureText(tr("MIDI port"),
+                      tr("Selects a MIDI port which is used to transmit data to the instrument."),
+                      keyboardPic);
+
+    insertSeparator();
+
     insertPictureText(tr("Device information"),
                       tr("Verifies presence of device features which guarantee ideal usage experience."),
                       infoPic);
@@ -264,6 +272,39 @@ void MainWindow::execHelpDialog()
 
     dlg->exec();
     dlg->deleteLater();
+}
+
+void MainWindow::chooseMidiPort()
+{
+    Ui::MainWindow &ui = *ui_;
+
+    QWidget *button = ui.toolBar->widgetForAction(ui.actionChoose_MIDI_port);
+    QMenu menu;
+    QAction *action;
+
+    QStringList ports = theApp()->getMidiPorts();
+
+    QIcon musicIcon = QIcon(":/images/noto/emoji_u1f3bc.png");
+
+    if (ports.empty()) {
+        action = menu.addAction(tr("No MIDI ports"));
+        action->setDisabled(true);
+    }
+    else {
+        for (unsigned i = 0, n = ports.size(); i < n; ++i) {
+            QString portName = ports[i];
+            QString portDisplayName = theApp()->getMidiPortDisplayName(portName);
+            action = menu.addAction(portDisplayName);
+            action->setData(portName);
+            action->setIcon(musicIcon);
+        }
+    }
+
+    QAction *choice = menu.exec(button->mapToGlobal(button->rect().bottomLeft()));
+    if (choice) {
+        QString portName = choice->data().toString();
+        theApp()->useMidiPort(portName);
+    }
 }
 
 void MainWindow::updateMpeZones()

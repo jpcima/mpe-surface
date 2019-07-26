@@ -3,17 +3,17 @@ package org.sdf1.jpcima;
 import android.content.*;
 import android.content.pm.*;
 import android.media.midi.*;
+import android.net.*;
 import android.os.*;
 import android.util.*;
 import java.io.*;
+import java.util.*;
 
 class MidiDeviceInterface {
     private static final String TAG = "MidiDeviceInterface";
 
     private Context context = null;
     private MidiInputPort inPort = null;
-    private String inDevName = null;
-    private String inPortName = null;
 
     public MidiDeviceInterface(Context context)
     {
@@ -33,11 +33,21 @@ class MidiDeviceInterface {
 
     public void openInputPort()
     {
+        openInputPort((Uri)null);
+    }
+
+    public void openInputPort(String uriString)
+    {
+        openInputPort((uriString != null) ? Uri.parse(uriString) : null);
+    }
+
+    public void openInputPort(Uri uri)
+    {
         try { closePort(); } catch (IOException ex) {}
 
         Log.i(TAG, "Open port");
 
-        EndpointInfo ep = getInputEndpoint();
+        EndpointInfo ep = findEndpointUri(uri, MidiDeviceInfo.PortInfo.TYPE_INPUT);
         if (ep == null) {
             Log.e(TAG, "MIDI input endpoint not found");
             return;
@@ -46,11 +56,18 @@ class MidiDeviceInterface {
         openInputEndpoint(ep);
     }
 
-    public void changeInputPort(String dev, String port)
+    public String[] listInputPorts()
     {
-        inDevName = dev;
-        inPortName = port;
-        openInputPort();
+        ArrayList<String> list = new ArrayList<String>();
+
+        EndpointInfo eps[] = findAllEndpoints(null, null, MidiDeviceInfo.PortInfo.TYPE_INPUT);
+
+        for (int i = 0, n = eps.length; i < n; ++i) {
+            EndpointInfo ep = eps[i];
+            list.add(ep.toUri().toString());
+        }
+
+        return list.toArray(new String[0]);
     }
 
     public void sendMidiMessage(byte[] message, double timeDelta)
@@ -80,44 +97,84 @@ class MidiDeviceInterface {
     private class EndpointInfo {
         MidiDeviceInfo device;
         MidiDeviceInfo.PortInfo port;
+
+        public static final String URI_SCHEME = "android";
+
+        public Uri toUri()
+        {
+            Uri.Builder bld = new Uri.Builder();
+            bld.scheme(URI_SCHEME);
+            bld.appendPath(device.getProperties().getCharSequence(MidiDeviceInfo.PROPERTY_NAME).toString());
+            bld.appendPath(port.getName());
+            return bld.build();
+        }
     }
 
-    private EndpointInfo getInputEndpoint()
+    private EndpointInfo[] findAllEndpoints(String devName, String portName, int type)
     {
-        return findEndpoint(inDevName, inPortName, MidiDeviceInfo.PortInfo.TYPE_INPUT);
-    }
+        ArrayList<EndpointInfo> eps = new ArrayList<EndpointInfo>();
 
-    private EndpointInfo findEndpoint(String devName, String portName, int type)
-    {
         MidiManager mgr = getMidiManager();
         if (mgr == null)
-            return null;
+            return eps.toArray(new EndpointInfo[0]);
 
-        EndpointInfo ep = null;
         MidiDeviceInfo[] infos = mgr.getDevices();
 
-        for (int i = 0, n = infos.length; i < n && ep == null; ++i) {
+        for (int i = 0, n = infos.length; i < n; ++i) {
             MidiDeviceInfo dev = infos[i];
             MidiDeviceInfo.PortInfo[] ports = dev.getPorts();
 
             if (devName != null && !devName.equals(dev.getProperties().getCharSequence(MidiDeviceInfo.PROPERTY_NAME)))
                 continue;
 
-            for (int j = 0, m = ports.length; j < m && ep == null; ++j) {
+            for (int j = 0, m = ports.length; j < m; ++j) {
                 MidiDeviceInfo.PortInfo port = ports[j];
 
                 if (port.getType() != type)
                     continue;
 
                 if (portName == null || portName.equals(port.getName())) {
-                    ep = new EndpointInfo();
+                    EndpointInfo ep = new EndpointInfo();
                     ep.device = dev;
                     ep.port = port;
+                    eps.add(ep);
                 }
             }
         }
 
-        return ep;
+        return eps.toArray(new EndpointInfo[0]);
+    }
+
+    private EndpointInfo findEndpoint(String devName, String portName, int type)
+    {
+        EndpointInfo eps[] = findAllEndpoints(devName, portName, type);
+        return (eps.length > 0) ? eps[0] : null;
+    }
+
+    private EndpointInfo findEndpointUri(String uriString, int type)
+    {
+        return findEndpointUri((uriString != null) ? Uri.parse(uriString) : null, type);
+    }
+
+    private EndpointInfo findEndpointUri(Uri uri, int type)
+    {
+        if (uri == null)
+            return findEndpoint(null, null, type);
+
+        if (!uri.getScheme().equals(EndpointInfo.URI_SCHEME))
+            return null;
+
+        List<String> segments = uri.getPathSegments();
+        int numSegments = segments.size();
+
+        String devName = "";
+        String portName = "";
+        if (numSegments > 0)
+            devName = segments.get(0);
+        if (numSegments > 1)
+            portName = segments.get(1);
+
+        return findEndpoint(devName, portName, type);
     }
 
     private void openInputEndpoint(final EndpointInfo ep)

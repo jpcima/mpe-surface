@@ -26,6 +26,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 CONFIG += thread
 
+QMAKE_CFLAGS += "-Wno-old-style-cast"
+QMAKE_CXXFLAGS += "-Wno-old-style-cast"
+
 UI_DIR = forms
 
 SOURCES += \
@@ -80,4 +83,6 @@ DISTFILES += \
 ANDROID_PACKAGE_SOURCE_DIR = \
     $$PWD/android
 
-include("thirdparty/RtMidi/RtMidi.pri")
+!android {
+    include("thirdparty/RtMidi/RtMidi.pri")
+}

@@ -15,6 +15,11 @@ public class MidiService extends JobIntentService {
 
     private static MidiDeviceInterface midi = null;
 
+    public static MidiDeviceInterface getMidiDeviceInterface()
+    {
+        return midi;
+    }
+
     @Override
     public void onCreate()
     {

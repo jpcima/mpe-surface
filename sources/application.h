@@ -14,6 +14,9 @@ public:
     Application(int &argc, char *argv[]);
     void init();
 
+    QStringList getMidiPorts();
+    QString getMidiPortDisplayName(const QString &uri) const;
+    void useMidiPort(const QString &uri);
     void sendMidi(const quint8 *data, size_t length, ulong timestamp);
 
     //

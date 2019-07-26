@@ -22,6 +22,7 @@ private:
 
     void execDeviceInfoDialog();
     void execHelpDialog();
+    void chooseMidiPort();
 
     void updateMpeZones();
     void updateBendRange();
