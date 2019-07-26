@@ -36,7 +36,9 @@ SOURCES += \
     sources/main.cpp \
     sources/main_window.cpp \
     sources/touch_mpe_handler.cpp \
-    sources/touch_piano.cpp
+    sources/touch_piano.cpp \
+    sources/screen_metrics.cpp \
+    sources/style/qmidictlActionBarStyle.cpp
 
 HEADERS += \
     sources/application.h \
@@ -44,7 +46,9 @@ HEADERS += \
     sources/touch_mpe_handler.h \
     sources/touch_piano.h \
     sources/touch_piano_listener.h \
-    sources/mpe_definitions.h
+    sources/mpe_definitions.h \
+    sources/screen_metrics.h \
+    sources/style/qmidictlActionBarStyle.h
 
 FORMS += \
     sources/forms/bend_range_chooser.ui \

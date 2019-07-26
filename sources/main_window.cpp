@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "touch_mpe_handler.h"
+#include "screen_metrics.h"
 #include "application.h"
 #include "mpe_definitions.h"
 #include "forms/ui_main_window.h"
@@ -131,9 +132,9 @@ void MainWindow::execDeviceInfoDialog()
     QGridLayout *grid = new QGridLayout;
     dlg->setLayout(grid);
 
-    QPixmap yesPic = QPixmap(":/images/noto/emoji_u2714.png").scaledToHeight(32, Qt::SmoothTransformation);
-    QPixmap noPic = QPixmap(":/images/noto/emoji_u274c.png").scaledToHeight(32, Qt::SmoothTransformation);
-    QPixmap maybePic = QPixmap(":/images/noto/emoji_u2753.png").scaledToHeight(32, Qt::SmoothTransformation);
+    QPixmap yesPic = QPixmap(":/images/noto/emoji_u2714.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
+    QPixmap noPic = QPixmap(":/images/noto/emoji_u274c.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
+    QPixmap maybePic = QPixmap(":/images/noto/emoji_u2753.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
 
     int row = 0;
 
@@ -194,12 +195,12 @@ void MainWindow::execHelpDialog()
 
     int row = 0;
 
-    QPixmap rocketPic = QPixmap(":/images/noto/emoji_u1f680.png").scaledToHeight(32, Qt::SmoothTransformation);
-    QPixmap wrenchPic = QPixmap(":/images/noto/emoji_u1f527.png").scaledToHeight(32, Qt::SmoothTransformation);
-    QPixmap keyboardPic = QPixmap(":/images/noto/emoji_u1f3b9.png").scaledToHeight(32, Qt::SmoothTransformation);
-    QPixmap infoPic = QPixmap(":/images/noto/emoji_u2139.png").scaledToHeight(32, Qt::SmoothTransformation);
+    QPixmap rocketPic = QPixmap(":/images/noto/emoji_u1f680.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
+    QPixmap wrenchPic = QPixmap(":/images/noto/emoji_u1f527.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
+    QPixmap keyboardPic = QPixmap(":/images/noto/emoji_u1f3b9.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
+    QPixmap infoPic = QPixmap(":/images/noto/emoji_u2139.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
 #ifdef Q_OS_ANDROID
-    QPixmap robotPic = QPixmap(":/images/noto/emoji_u1f916.png").scaledToHeight(32, Qt::SmoothTransformation);
+    QPixmap robotPic = QPixmap(":/images/noto/emoji_u1f916.png").scaledToHeight((int)dpToPixels(48), Qt::SmoothTransformation);
 #endif
 
     auto insertSeparator =

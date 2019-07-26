@@ -1,5 +1,7 @@
 #include "application.h"
 #include "main_window.h"
+#include "style/qmidictlActionBarStyle.h"
+#include <QStyleFactory>
 #include <QTouchDevice>
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras>
@@ -27,8 +29,17 @@ Application::Application(int &argc, char *argv[])
 
 void Application::init()
 {
+#if defined(Q_OS_ANDROID)
+    QStyle *androidStyle = QStyleFactory::create("Android");
+    setStyle(new qmidictlActionBarStyle(androidStyle));
+#endif
+
     MainWindow *win = mainWindow_ = new MainWindow(this);
+#if defined(Q_OS_ANDROID)
+    win->showMaximized();
+#else
     win->show();
+#endif
 }
 
 #if !defined(Q_OS_ANDROID)

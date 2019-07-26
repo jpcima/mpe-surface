@@ -19,6 +19,8 @@ add_executable(mpe-surface
   "sources/main_window.cpp"
   "sources/touch_mpe_handler.cpp"
   "sources/touch_piano.cpp"
+  "sources/screen_metrics.cpp"
+  "sources/style/qmidictlActionBarStyle.cpp"
   "resources/resources.qrc")
 target_include_directories(mpe-surface
   PRIVATE "sources")
