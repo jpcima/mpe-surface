@@ -239,7 +239,7 @@ bool TouchPiano::moveTouchPoint(ulong timestamp, int id, QPointF pos, qreal pres
 
 qreal TouchPiano::scaledKeyWidth() const
 {
-    return (1.0 + scaleValue_ * 0.1) * keyWidth_;
+    return (1.0 + scaleValue_ * 0.075) * keyWidth_;
 }
 
 qreal TouchPiano::scaledOctaveWidth() const

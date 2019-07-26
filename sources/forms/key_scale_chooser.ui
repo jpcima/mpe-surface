@@ -33,10 +33,10 @@
       </size>
      </property>
      <property name="minimum">
-      <number>-5</number>
+      <number>-10</number>
      </property>
      <property name="maximum">
-      <number>5</number>
+      <number>10</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
