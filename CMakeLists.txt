@@ -10,6 +10,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+include(RtMidi)
+
 add_executable(mpe-surface
   "sources/application.cpp"
   "sources/main.cpp"
@@ -20,4 +23,5 @@ add_executable(mpe-surface
 target_include_directories(mpe-surface
   PRIVATE "sources")
 target_link_libraries(mpe-surface
-  PRIVATE Qt5::Widgets)
+  PRIVATE Qt5::Widgets
+  PRIVATE RtMidi)

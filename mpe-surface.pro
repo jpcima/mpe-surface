@@ -46,8 +46,7 @@ FORMS += \
     sources/forms/bend_range_chooser.ui \
     sources/forms/key_scale_chooser.ui \
     sources/forms/main_window.ui \
-    sources/forms/mpe_zone_chooser.ui \
-    sources/forms/bend_range_chooser.ui
+    sources/forms/mpe_zone_chooser.ui
 
 RESOURCES += \
     resources/resources.qrc
@@ -79,3 +78,5 @@ DISTFILES += \
 
 ANDROID_PACKAGE_SOURCE_DIR = \
     $$PWD/android
+
+include("thirdparty/RtMidi/RtMidi.pri")
