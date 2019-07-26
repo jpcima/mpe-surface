@@ -4,6 +4,9 @@ SOURCES += \
 HEADERS += \
     $$PWD/RtMidi.h
 
+INCLUDEPATH += \
+    $$PWD
+
 linux {
     DEFINES += __LINUX_ALSA__
     LIBS += -lasound

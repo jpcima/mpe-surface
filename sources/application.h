@@ -1,6 +1,10 @@
 #pragma once
 #include "touch_mpe_handler.h"
 #include <QApplication>
+#if !defined(Q_OS_ANDROID)
+#include <RtMidi.h>
+#endif
+#include <memory>
 
 class MainWindow;
 
@@ -24,6 +28,11 @@ private:
     //
     bool havePreviousMidiTimestamp_ = false;
     ulong previousMidiTimestamp_ = 0;
+
+    //
+#if !defined(Q_OS_ANDROID)
+    std::unique_ptr<RtMidiOut> rtmidiOut_;
+#endif
 };
 
 //

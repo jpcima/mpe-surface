@@ -11,6 +11,12 @@ Application::Application(int &argc, char *argv[])
     setApplicationName("MPE surface");
 
     setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents);
+
+#if !defined(Q_OS_ANDROID)
+    RtMidiOut *out = new RtMidiOut(RtMidi::UNSPECIFIED, applicationName().toStdString());
+    rtmidiOut_.reset(out);
+    out->openVirtualPort("output");
+#endif
 }
 
 void Application::init()
@@ -59,14 +65,15 @@ void Application::sendMidi(const quint8 *data, size_t length, ulong timestamp)
         (jint)(1000 /*JOB_ID*/),
         intent.object<jobject>());
 #else
+    if (RtMidiOut *out = rtmidiOut_.get())
+        out->sendMessage(data, length);
 
-    #pragma message("TODO: implement MIDI out on desktop")
-
-    fprintf(stderr, "Send MIDI:");
-    for (size_t i = 0; i < length; ++i)
-        fprintf(stderr, " %02X", data[i]);
-    fprintf(stderr, "\n");
-
+    if (0) {
+        fprintf(stderr, "Send MIDI:");
+        for (size_t i = 0; i < length; ++i)
+            fprintf(stderr, " %02X", data[i]);
+        fprintf(stderr, "\n");
+    }
 #endif
 }
 

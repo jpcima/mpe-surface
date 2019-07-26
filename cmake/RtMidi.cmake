@@ -12,3 +12,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   find_library(COREAUDIO_LIBRARY "CoreAudio")
   target_link_libraries(RtMidi PUBLIC "${COREMIDI_LIBRARY}" "${COREAUDIO_LIBRARY}")
 endif()
+
+find_package(Threads REQUIRED)
+target_link_libraries(RtMidi PUBLIC ${CMAKE_THREAD_LIBS_INIT})
