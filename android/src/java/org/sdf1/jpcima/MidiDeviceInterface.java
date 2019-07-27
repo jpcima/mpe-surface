@@ -70,14 +70,13 @@ class MidiDeviceInterface {
         return list.toArray(new String[0]);
     }
 
-    public void sendMidiMessage(byte[] message, double timeDelta)
+    public void sendMidiMessage(byte[] message)
     {
         Log.d(TAG, "Send MIDI to port: " + inPort);
 
         if (inPort == null)
             return;
 
-        /* TODO: time delta */
         try {
             inPort.send(message, 0, message.length);
         }

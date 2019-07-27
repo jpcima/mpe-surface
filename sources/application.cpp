@@ -131,7 +131,7 @@ QStringList Application::getMidiPorts()
     QAndroidJniEnvironment env;
     QAndroidJniObject context = QtAndroid::androidContext();
 
-    QAndroidJniObject midiInterface = QAndroidJniObject::callStaticObjectMethod("org/sdf1/jpcima/MidiService", "getMidiDeviceInterface", "()Lorg/sdf1/jpcima/MidiDeviceInterface;");
+    QAndroidJniObject midiInterface = QAndroidJniObject::callStaticObjectMethod("org/sdf1/jpcima/MainActivity", "getMidiDeviceInterface", "()Lorg/sdf1/jpcima/MidiDeviceInterface;");
     QAndroidJniObject midiPorts = midiInterface.callObjectMethod("listInputPorts", "()[Ljava/lang/String;");
 
     unsigned count = (unsigned)env->GetArrayLength(midiPorts.object<jobjectArray>());
@@ -159,7 +159,7 @@ void Application::useMidiPort(const QString &uri)
 {
     QAndroidJniObject context = QtAndroid::androidContext();
 
-    QAndroidJniObject midiInterface = QAndroidJniObject::callStaticObjectMethod("org/sdf1/jpcima/MidiService", "getMidiDeviceInterface", "()Lorg/sdf1/jpcima/MidiDeviceInterface;");
+    QAndroidJniObject midiInterface = QAndroidJniObject::callStaticObjectMethod("org/sdf1/jpcima/MainActivity", "getMidiDeviceInterface", "()Lorg/sdf1/jpcima/MidiDeviceInterface;");
     midiInterface.callMethod<void>("openInputPort", "(Ljava/lang/String;)V", QAndroidJniObject::fromString(uri).object<jobject>());
 }
 #endif
@@ -173,36 +173,14 @@ void Application::sendMidi(const quint8 *data, size_t length, ulong timestamp)
         havePreviousMidiTimestamp_ = true;
     previousMidiTimestamp_ = timestamp;
 
-#ifdef Q_OS_ANDROID
-    QAndroidJniObject context = QtAndroid::androidContext();
+    //TODO: MIDI time delta
 
-    QAndroidJniObject intent("android/content/Intent", "()V");
+#ifdef Q_OS_ANDROID
     QAndroidJniEnvironment env;
-    intent.callObjectMethod(
-        "setClassName", "(Landroid/content/Context;Ljava/lang/String;)Landroid/content/Intent;",
-        context.object<jobject>(),
-        QAndroidJniObject::fromString("org.sdf1.jpcima.MidiService").object<jobject>());
-    intent.callObjectMethod(
-        "putExtra", "(Ljava/lang/String;I)Landroid/content/Intent;",
-        QAndroidJniObject::fromString("type").object<jstring>(),
-        (jint)1/*SEND_MIDI*/);
-    intent.callObjectMethod(
-        "putExtra", "(Ljava/lang/String;D)Landroid/content/Intent;",
-        QAndroidJniObject::fromString("time").object<jstring>(),
-        (jdouble)timedelta);
-    jbyteArray dataArray = env->NewByteArray(length);
-    env->SetByteArrayRegion(dataArray, 0, length, (const jbyte *)data);
-    intent.callObjectMethod(
-        "putExtra", "(Ljava/lang/String;[B)Landroid/content/Intent;",
-        QAndroidJniObject::fromString("data").object<jstring>(),
-        dataArray);
-    QAndroidJniObject::callStaticMethod<void>(
-        "androidx/core/app/JobIntentService",
-        "enqueueWork", "(Landroid/content/Context;Ljava/lang/Class;ILandroid/content/Intent;)V",
-        context.object<jobject>(),
-        env.findClass("org/sdf1/jpcima/MidiService"),
-        (jint)(1000 /*JOB_ID*/),
-        intent.object<jobject>());
+    QAndroidJniObject midiInterface = QAndroidJniObject::callStaticObjectMethod("org/sdf1/jpcima/MainActivity", "getMidiDeviceInterface", "()Lorg/sdf1/jpcima/MidiDeviceInterface;");
+    QAndroidJniObject dataArray = env->NewByteArray(length);
+    env->SetByteArrayRegion(dataArray.object<jbyteArray>(), 0, length, (const jbyte *)data);
+    midiInterface.callMethod<void>("sendMidiMessage", "([B)V", dataArray.object<jbyteArray>());
 #else
     if (RtMidiOut *out = rtmidiOut_.get())
         out->sendMessage(data, length);
