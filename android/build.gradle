@@ -18,7 +18,6 @@ apply plugin: 'com.android.application'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation "com.android.support:support-core-utils:28.0.0"
 }
 
 android {
