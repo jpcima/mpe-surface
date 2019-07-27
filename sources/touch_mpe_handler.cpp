@@ -18,25 +18,26 @@ void TouchMpeHandler::sendConfiguration()
 {
     clear();
 
+    // reset all controllers
+    for (int ch = 0; ch < 16; ++ch) {
+        sendMidi3(0xb0|ch, 0x79, 0x00, 0);
+    }
+
     // lower zone
-    sendMidi3(0xb0, 0x79, 0x00, 0);
     sendMidi3(0xb0, 0x64, 0x06, 0);
     sendMidi3(0xb0, 0x65, 0x00, 0);
     sendMidi3(0xb0, 0x06, (uint8_t)mpeLowerValue_, 0);
     // upper zone
-    sendMidi3(0xbf, 0x79, 0x00, 0);
     sendMidi3(0xbf, 0x64, 0x06, 0);
     sendMidi3(0xbf, 0x65, 0x00, 0);
     sendMidi3(0xbf, 0x06, (uint8_t)(14 - mpeLowerValue_), 0);
 
     // lower bend range
-    sendMidi3(0xb0, 0x64, 0x00, 0);
-    sendMidi3(0xb0, 0x65, 0x00, 0);
-    sendMidi3(0xb0, 0x06, (uint8_t)bendRangeValue_, 0);
-    // upper bend range
-    sendMidi3(0xbf, 0x64, 0x00, 0);
-    sendMidi3(0xbf, 0x65, 0x00, 0);
-    sendMidi3(0xbf, 0x06, (uint8_t)bendRangeValue_, 0);
+    for (int ch = 0; ch < 16; ++ch) {
+        sendMidi3(0xb0|ch, 0x64, 0x00, 0);
+        sendMidi3(0xb0|ch, 0x65, 0x00, 0);
+        sendMidi3(0xb0|ch, 0x06, (uint8_t)bendRangeValue_, 0);
+    }
 }
 
 void TouchMpeHandler::sendMidi2(quint8 data0, quint8 data1, ulong timestamp)
