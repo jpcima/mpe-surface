@@ -279,11 +279,33 @@ void TouchPiano::updateSizesAndPositions()
             sh *= 0.6;
 
         int white_key_index = white_key_indices[i % 12];
-        if (white_key_index != -1) {
-            sx = ow * (i / 12) + white_key_index * white_key_width;
-            sw = white_key_width;
-            if (i + 1 == NumKeys)
-                sw = kw;
+
+        if (0) {
+            if (white_key_index != -1) {
+                sx = ow * (i / 12) + white_key_index * white_key_width;
+                sw = white_key_width;
+                if (i + 1 == NumKeys)
+                    sw = kw;
+            }
+        }
+        else {
+            switch (white_key_index) {
+            case 0:
+            case 3:
+                sw += 0.5 * sw;
+                break;
+            case 1:
+            case 4:
+            case 5:
+                sx -= 0.5 * sw;
+                sw += sw;
+                break;
+            case 2:
+            case 6:
+                sx -= 0.5 * sw;
+                sw += 0.5 * sw;
+                break;
+            }
         }
 
         keyRect_[i] = QRectF(sx, sy, sw, sh);
