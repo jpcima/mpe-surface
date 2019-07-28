@@ -6,7 +6,10 @@
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras>
 #endif
+#include <QOpenGLContext>
+#include <QSurfaceFormat>
 #include <QUrl>
+#include <QDebug>
 
 #if !defined(Q_OS_ANDROID)
 static const char *rtmidiOutPortName = "output";
@@ -40,6 +43,28 @@ void Application::init()
 #else
     win->show();
 #endif
+}
+
+void Application::initGL()
+{
+    QSurfaceFormat format;
+    format = QSurfaceFormat::defaultFormat();
+    //format.setOption(QSurfaceFormat::DebugContext);
+    format.setRedBufferSize(8);
+    format.setGreenBufferSize(8);
+    format.setBlueBufferSize(8);
+    format.setAlphaBufferSize(8);
+    format.setDepthBufferSize(0);
+    format.setStencilBufferSize(8);
+    //format.setSamples(2);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+#if defined(Q_OS_ANDROID)
+    format.setRenderableType(QSurfaceFormat::OpenGLES);
+#else
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+#endif
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    QSurfaceFormat::setDefaultFormat(format);
 }
 
 #if !defined(Q_OS_ANDROID)

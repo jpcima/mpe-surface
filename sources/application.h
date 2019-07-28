@@ -14,6 +14,8 @@ public:
     Application(int &argc, char *argv[]);
     void init();
 
+    static void initGL();
+
     QStringList getMidiPorts();
     QString getMidiPortDisplayName(const QString &uri) const;
     void useMidiPort(const QString &uri);

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 android { QT += androidextras }
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -26,8 +26,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 CONFIG += thread
 
-QMAKE_CFLAGS += "-Wno-old-style-cast"
-QMAKE_CXXFLAGS += "-Wno-old-style-cast"
+QMAKE_CFLAGS += -Wno-old-style-cast
+QMAKE_CXXFLAGS += -Wno-old-style-cast
 
 UI_DIR = forms
 
@@ -38,7 +38,9 @@ SOURCES += \
     sources/touch_mpe_handler.cpp \
     sources/touch_piano.cpp \
     sources/screen_metrics.cpp \
-    sources/style/qmidictlActionBarStyle.cpp
+    sources/style/qmidictlActionBarStyle.cpp \
+    sources/my_nanovg.cpp \
+    thirdparty/nanovg/src/nanovg.c
 
 HEADERS += \
     sources/application.h \
@@ -49,6 +51,7 @@ HEADERS += \
     sources/mpe_definitions.h \
     sources/screen_metrics.h \
     sources/style/qmidictlActionBarStyle.h
+    sources/my_nanovg.h
 
 FORMS += \
     sources/forms/bend_range_chooser.ui \
@@ -60,7 +63,8 @@ RESOURCES += \
     resources/resources.qrc
 
 INCLUDEPATH += \
-    $$PWD/sources
+    $$PWD/sources \
+    $$PWD/thirdparty/nanovg/src
 
 CONFIG += mobility
 MOBILITY =

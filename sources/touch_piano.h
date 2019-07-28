@@ -1,15 +1,17 @@
 #pragma once
 #include "mpe_definitions.h"
-#include <QWidget>
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
 #include <QPixmap>
 #include <unordered_map>
 #include <memory>
 
 class TouchPianoListener;
 class QTouchEvent;
+struct NVGcontext;
 
 //
-class TouchPiano : public QWidget {
+class TouchPiano : public QOpenGLWidget, protected QOpenGLFunctions {
     Q_OBJECT
 
 public:
@@ -26,19 +28,24 @@ public:
 protected:
     bool event(QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
+
+    void initializeGL() override;
+    void resizeGL(int w, int h) override;
+    void paintGL() override;
 
 private:
     bool releaseTouchPoint(ulong timestamp, int id);
     bool releaseAllTouchPoints(ulong timestamp);
     bool moveTouchPoint(ulong timestamp, int id, QPointF pos, qreal pressure);
 
+    qreal viewportWidth() const;
+    qreal viewportHeight() const;
+
     qreal scaledKeyWidth() const;
     qreal scaledOctaveWidth() const;
     qreal scaledFullWidth() const;
 
     void updateSizesAndPositions();
-    void paintBackground(QPainter &p);
 
     QPointF mapToPiano(QPointF pos);
 
@@ -47,9 +54,11 @@ private:
     static Point3d clampXyz(Point3d xyz);
 
 private:
-    int topMargin_ = 40;
-    int bottomMargin_ = 20;
-    int keyWidth_ = 30;
+    qreal pixelRatio_ = 1.0;
+
+    qreal topMargin_ = 0;
+    qreal bottomMargin_ = 0;
+    qreal keyWidth_ = 0;
     qreal scaleValue_ = 0;
     qreal xScrollPosition_ = 0.0;
 
@@ -72,9 +81,6 @@ private:
     TouchPianoListener *listener_ = nullptr;
     MpeZone mpeZone_ = MpeZone::Lower;
 
-#if defined(Q_OS_ANDROID)
-    enum { HasSlowDrawing = true };
-#else
-    enum { HasSlowDrawing = false };
-#endif
+    struct NanoVGDeleter { void operator()(NVGcontext *x); };
+    std::unique_ptr<NVGcontext, NanoVGDeleter> vg_;
 };
