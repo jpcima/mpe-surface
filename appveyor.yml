@@ -1,0 +1,44 @@
+# Build settings for Appveyor CI
+
+image: Ubuntu
+
+configuration: Release
+
+branches:
+  except:
+    - latest
+
+cache:
+  - download
+
+environment:
+  matrix:
+    - build_type: android_armv7
+
+install:
+  - sudo apt -y install p7zip
+  - mkdir -p download
+  - wget -c -O {download,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+  - wget -c -O {download,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+  - wget -c -O {download,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+  - wget -c -O {download,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+
+for:
+  -
+    matrix:
+      only:
+        - build_type: android_armv7
+    build_script:
+      - sudo 7x -o/home/qt download/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+      - sudo 7x -o/home/qt download/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+      - sudo 7x -o/home/qt download/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+      - sudo 7x -o/home/qt download/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+      - sudo mkdir -p /home/qt/work
+      - sudo ln -s ../5.13.0/android_armv7 /home/qt/work/install
+      - sed -i 's/^QT_EDITION =.*/QT_EDITION = OpenSource/' /home/qt/work/install/mkspecs/qconfig.pri
+      - sed -i 's/^QT_LICHECK =.*/QT_LICHECK =/' /home/qt/work/install/mkspecs/qconfig.pri
+      - mkdir build
+      - cd build
+      - qmake CONFIG+=release QMAKE_LINK+=-nostdlib++ ../mpe-surface.pro
+      - make install INSTALL_ROOT=android-build
+      - androiddeployqt --input android-libmpe-surface.so-deployment-settings.json --output android-build --gradle
