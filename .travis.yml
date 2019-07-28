@@ -53,6 +53,20 @@ install:
 - wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86.7z
 - wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86.7z
 - cd ../..
+# Qt for Android ARM64
+- cd download/qt
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_arm64_v8a/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARM64.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_arm64_v8a/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARM64.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_arm64_v8a/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARM64.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_arm64_v8a/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARM64.7z
+- cd ../..
+# Qt for Android X86_64
+- cd download/qt
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86_64/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86_64.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86_64/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86_64.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86_64/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86_64.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86_64/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86_64.7z
+- cd ../..
 
 script:
 # prepare Qt Android ARMv7
@@ -85,6 +99,38 @@ script:
 - make -C build install INSTALL_ROOT=android-build
 - androiddeployqt --input build/android-libmpe-surface.so-deployment-settings.json --output build/android-build --gradle --sign secret/jpc-android.ks jpc-android --storepass "$KEYSTORE_PASS"
 - install -D -m 644 build/android-build/build/outputs/apk/release/android-build-release-signed.apk releases/mpe-surface-android_x86.apk
+- rm -rf build
+- rm -rf /home/qt/*
+# prepare Qt Android ARM64
+- for f in download/qt/*-ARM64.7z; do 7zr x -o/home/qt "$f" > /dev/null; done
+- mkdir -p /home/qt/work
+- ln -s ../5.13.0/android_arm64_v8a /home/qt/work/install
+- sed -i 's/^QT_EDITION =.*/QT_EDITION = OpenSource/' /home/qt/work/install/mkspecs/qconfig.pri
+- sed -i 's/^QT_LICHECK =.*/QT_LICHECK =/' /home/qt/work/install/mkspecs/qconfig.pri
+# build Android ARM64
+- mkdir -p build
+- cd build
+- QMAKESPEC="$QTDIR/mkspecs/android-clang" qmake CONFIG+=release QMAKE_LINK+=-nostdlib++ ../mpe-surface.pro
+- cd ..
+- make -C build install INSTALL_ROOT=android-build
+- androiddeployqt --input build/android-libmpe-surface.so-deployment-settings.json --output build/android-build --gradle --sign secret/jpc-android.ks jpc-android --storepass "$KEYSTORE_PASS"
+- install -D -m 644 build/android-build/build/outputs/apk/release/android-build-release-signed.apk releases/mpe-surface-android_arm64.apk
+- rm -rf build
+- rm -rf /home/qt/*
+# prepare Qt Android X86_64
+- for f in download/qt/*-X86_64.7z; do 7zr x -o/home/qt "$f" > /dev/null; done
+- mkdir -p /home/qt/work
+- ln -s ../5.13.0/android_x86_64 /home/qt/work/install
+- sed -i 's/^QT_EDITION =.*/QT_EDITION = OpenSource/' /home/qt/work/install/mkspecs/qconfig.pri
+- sed -i 's/^QT_LICHECK =.*/QT_LICHECK =/' /home/qt/work/install/mkspecs/qconfig.pri
+# build Android X86_64
+- mkdir -p build
+- cd build
+- QMAKESPEC="$QTDIR/mkspecs/android-clang" qmake CONFIG+=release QMAKE_LINK+=-nostdlib++ ../mpe-surface.pro
+- cd ..
+- make -C build install INSTALL_ROOT=android-build
+- androiddeployqt --input build/android-libmpe-surface.so-deployment-settings.json --output build/android-build --gradle --sign secret/jpc-android.ks jpc-android --storepass "$KEYSTORE_PASS"
+- install -D -m 644 build/android-build/build/outputs/apk/release/android-build-release-signed.apk releases/mpe-surface-android_x86_64.apk
 - rm -rf build
 - rm -rf /home/qt/*
 
