@@ -1,14 +1,18 @@
 language: java
 sudo: required
 dist: xenial
+
 jdk:
 - openjdk8
+
 addons:
   apt_packages:
   - p7zip
+
 cache:
   directories:
   - download/qt
+
 before_install:
 - openssl aes-256-cbc -K "$encrypted_14c4db58b9e2_key" -iv "$encrypted_14c4db58b9e2_iv" -in secret/jpc-android.ks.enc -out secret/jpc-android.ks -d
 - export ANDROID_HOME="/home/android"
@@ -16,41 +20,74 @@ before_install:
 - export ANDROID_NDK_ROOT="$ANDROID_HOME/android-ndk-r20"
 - export QTDIR="/home/qt/work/install"
 - export PATH="$QTDIR/bin:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH"
+
 install:
+# create download directories
 - mkdir -p download/qt
+# install Android SDK
 - sudo install -d -m777 "$ANDROID_HOME"
 - wget -q -c -O {download,https://dl.google.com/android/repository}/sdk-tools-linux-4333796.zip
 - unzip -q -d "$ANDROID_HOME" download/sdk-tools-linux-4333796.zip
 - mkdir -p ~/.android
 - touch ~/.android/repositories.cfg
-- yes | sdkmanager --licenses
+- yes | sdkmanager --licenses > /dev/null
 - yes | sdkmanager "tools" "platform-tools" > /dev/null
 - yes | sdkmanager "platforms;android-29" > /dev/null
 - yes | sdkmanager "build-tools;29.0.1" > /dev/null
+# install Android NDK
 - wget -q -c -O {download,https://dl.google.com/android/repository}/android-ndk-r20-linux-x86_64.zip
 - unzip -q -d "$ANDROID_HOME" download/android-ndk-r20-linux-x86_64.zip
+# install Qt
 - sudo install -d -m777 /home/qt
-- wget -q -c -O {download/qt,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
-- 7zr x -o/home/qt download/qt/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z > /dev/null
-- wget -q -c -O {download/qt,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
-- 7zr x -o/home/qt download/qt/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z > /dev/null
-- wget -q -c -O {download/qt,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
-- 7zr x -o/home/qt download/qt/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z > /dev/null
-- wget -q -c -O {download/qt,https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7}/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
-- 7zr x -o/home/qt download/qt/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z > /dev/null
+# Qt for Android ARMv7
+- cd download/qt
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_armv7/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-ARMv7.7z
+- cd ../..
+# Qt for Android X86
+- cd download/qt
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86/5.13.0-0-201906171620qtbase-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86/5.13.0-0-201906171620qtandroidextras-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86/5.13.0-0-201906171620qttools-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86.7z
+- wget -q -c https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5130/qt.qt5.5130.android_x86/5.13.0-0-201906171620qtdeclarative-Linux-RHEL_7_6-Clang-Android-Android_ANY-X86.7z
+- cd ../..
+
+script:
+# prepare Qt Android ARMv7
+- for f in download/qt/*-ARMv7.7z; do 7zr x -o/home/qt "$f" > /dev/null; done
 - mkdir -p /home/qt/work
 - ln -s ../5.13.0/android_armv7 /home/qt/work/install
 - sed -i 's/^QT_EDITION =.*/QT_EDITION = OpenSource/' /home/qt/work/install/mkspecs/qconfig.pri
 - sed -i 's/^QT_LICHECK =.*/QT_LICHECK =/' /home/qt/work/install/mkspecs/qconfig.pri
-script:
-- mkdir build
+# build Android ARMv7
+- mkdir -p build
 - cd build
-- export QMAKESPEC="$QTDIR/mkspecs/android-clang"
-- qmake CONFIG+=release QMAKE_LINK+=-nostdlib++ ../mpe-surface.pro
+- QMAKESPEC="$QTDIR/mkspecs/android-clang" qmake CONFIG+=release QMAKE_LINK+=-nostdlib++ ../mpe-surface.pro
 - cd ..
 - make -C build install INSTALL_ROOT=android-build
 - androiddeployqt --input build/android-libmpe-surface.so-deployment-settings.json --output build/android-build --gradle --sign secret/jpc-android.ks jpc-android --storepass "$KEYSTORE_PASS"
 - install -D -m 644 build/android-build/build/outputs/apk/release/android-build-release-signed.apk releases/mpe-surface-android_armv7.apk
+- rm -rf build
+- rm -rf /home/qt/*
+# prepare Qt Android X86
+- for f in download/qt/*-X86.7z; do 7zr x -o/home/qt "$f" > /dev/null; done
+- mkdir -p /home/qt/work
+- ln -s ../5.13.0/android_x86 /home/qt/work/install
+- sed -i 's/^QT_EDITION =.*/QT_EDITION = OpenSource/' /home/qt/work/install/mkspecs/qconfig.pri
+- sed -i 's/^QT_LICHECK =.*/QT_LICHECK =/' /home/qt/work/install/mkspecs/qconfig.pri
+# build Android X86
+- mkdir -p build
+- cd build
+- QMAKESPEC="$QTDIR/mkspecs/android-clang" qmake CONFIG+=release QMAKE_LINK+=-nostdlib++ ../mpe-surface.pro
+- cd ..
+- make -C build install INSTALL_ROOT=android-build
+- androiddeployqt --input build/android-libmpe-surface.so-deployment-settings.json --output build/android-build --gradle --sign secret/jpc-android.ks jpc-android --storepass "$KEYSTORE_PASS"
+- install -D -m 644 build/android-build/build/outputs/apk/release/android-build-release-signed.apk releases/mpe-surface-android_x86.apk
+- rm -rf build
+- rm -rf /home/qt/*
+
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
@@ -59,6 +96,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
+
 env:
   global:
   - secure: VYxIYMYtHvdLfrLBB5sLqhzpNW2iprdIgrn8XLtdltkXynW/VmfzoePnRPc0VWUSjhNLUCLrodNbY+r84QTyXmYzyMi6A7zzHpiv7qkYuaP/t/K1Pc88HNw0RswnMM9e06NjQiQMR0ptXjTwsyL+1u8is4M5s+C8JaBDWg/Td/xVGO4x2w/YncrJwabggKCG2wnwn0q27VT7WxInjnEXvlwIDWpmXo8xaAtyQfnD4xU2DOi2voNcB9D4zMM/fxDACld/3Ir365hMzM7XMq95lX86bud7OMVldzTRxRdwolWUwjU8bYIU4v1RTm+w76+F/w211XaUDuYgj7FXbvwVeuuB6D4ZpVfSodcWbOWvnEdf7h52+MCT2x2fKFo8zaQ8PqmrGMGwEkdmn6UCSTbQuHkZuTxwwICjPDp6o/LyjOpI0ducCE826XuOXI8RZyBPbm9fRqsD8H2QI375O1ErV6tuRjNdGyK37GH2zrSu24Even7vqFHAsYnP37+5RscQzIAlFh/L3sCnvdi2h1qMEb1Lrj6bvqjLXteOUHPpWSIQf7ELhGW1CVjwn40z7q/VdfkGyETyNr0R2IxtRTiWbHg6W5NTY0+e7x3tmGSfBJ0ypdapqegokqzoVDoMwtw6ve8CR3P96v/XDXT7bGVuWgFkFOFlBIX3nEtHmejPRZM=
