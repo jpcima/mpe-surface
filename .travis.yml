@@ -140,6 +140,7 @@ deploy:
   file: releases/*
   file_glob: true
   skip_cleanup: true
+  overwrite: true
   on:
     tags: true
 
