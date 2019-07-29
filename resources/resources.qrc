@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file>images/icon/mpe-surface-192.png</file>
   <file>images/noto/emoji_u1f3b9.png</file>
   <file>images/noto/emoji_u1f3bc.png</file>
   <file>images/noto/emoji_u1f4da.png</file>

@@ -20,6 +20,7 @@ Application::Application(int &argc, char *argv[])
     : QApplication(argc, argv)
 {
     setApplicationName("MPE surface");
+    setWindowIcon(QIcon(":/images/icon/mpe-surface-192.png"));
 
     setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents);
 
